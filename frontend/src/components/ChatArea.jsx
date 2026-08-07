@@ -292,14 +292,11 @@ export default function ChatArea({ messages, isThinking, activeStage, pipelineSt
         )}
 
         {isThinking && (
-          <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-            <div className="glass-card" style={{ padding: '1rem 1.5rem', display: 'inline-block', borderRadius: '1rem' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div className="animate-spin-slow" style={{ width: '20px', height: '20px', border: '2px solid var(--accent-primary)', borderTopColor: 'transparent', borderRadius: '50%' }} />
-                <span style={{ color: 'var(--text-secondary)' }}>
-                  {activeStage ? STAGE_LABELS[activeStage] || 'Thinking...' : 'Thinking...'}
-                </span>
-              </div>
+          <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%', display: 'flex', justifyContent: 'center' }}>
+            <div className="glass-card" style={{ padding: '1rem 2rem', display: 'inline-flex', justifyContent: 'center', alignItems: 'center', borderRadius: '1rem' }}>
+              <span style={{ color: 'var(--text-secondary)', textAlign: 'center' }}>
+                {activeStage ? STAGE_LABELS[activeStage] || 'Thinking...' : 'Thinking...'}
+              </span>
             </div>
           </div>
         )}
@@ -364,18 +361,11 @@ export default function ChatArea({ messages, isThinking, activeStage, pipelineSt
               boxShadow: '0 4px 12px rgba(0,0,0,0.3), 0 0 15px rgba(14, 165, 233, 0.15)',
               display: 'flex',
               alignItems: 'center',
-              gap: '8px',
+              justifyContent: 'center',
               zIndex: 5,
               transition: 'all 0.3s ease'
             }}>
-              <div style={{ 
-                width: '8px', 
-                height: '8px', 
-                borderRadius: '50%', 
-                background: 'var(--accent-primary)', 
-                boxShadow: '0 0 10px var(--accent-primary)'
-              }} />
-              <span style={{ color: 'var(--text-primary)', textShadow: '0 0 10px rgba(14, 165, 233, 0.4)' }}>
+              <span style={{ color: 'var(--text-primary)', textShadow: '0 0 10px rgba(14, 165, 233, 0.4)', textAlign: 'center' }}>
                 {mode}
               </span>
             </div>

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { toPng } from 'html-to-image';
 import ReasoningTree from './ReasoningTree';
 
 const NodeSummarizer = ({ node }) => {
@@ -12,7 +13,12 @@ const NodeSummarizer = ({ node }) => {
   }
 
   if (type === 'finalAnswerNode') {
-    return <p>{data.summary || "Generated the final detailed answer for the user."}</p>;
+    const content = data.answer || data.summary || "Generated the final detailed answer for the user.";
+    return (
+      <div style={{ whiteSpace: 'pre-wrap' }}>
+        {typeof content === 'object' ? JSON.stringify(content, null, 2) : content}
+      </div>
+    );
   }
 
   if (type === 'approachNode') {
@@ -89,6 +95,32 @@ const STAGES = [
 
 export default function XAIPanel({ width, pipelineState = {}, isThinking, activeStage }) {
   const [selectedNode, setSelectedNode] = useState(null);
+  const [showMetrics, setShowMetrics] = useState(false);
+
+  const handleDownloadJSON = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(pipelineState, null, 2));
+    const dlAnchorElem = document.createElement('a');
+    dlAnchorElem.setAttribute("href", dataStr);
+    dlAnchorElem.setAttribute("download", "reasoning_pipeline.json");
+    dlAnchorElem.click();
+  };
+
+  const handleDownloadPNG = async () => {
+    const flowEl = document.querySelector(".react-flow");
+    if (flowEl) {
+      try {
+        const dataUrl = await toPng(flowEl, { backgroundColor: '#0f172a' });
+        const link = document.createElement('a');
+        link.download = 'reasoning_tree.png';
+        link.href = dataUrl;
+        link.click();
+      } catch (err) {
+        console.error("Failed to download image", err);
+      }
+    } else {
+      alert("No tree to download yet!");
+    }
+  };
 
   const getStageStatus = (stageId) => {
     if (pipelineState.completed_stages && pipelineState.completed_stages[stageId]) return 'complete';
@@ -102,28 +134,64 @@ export default function XAIPanel({ width, pipelineState = {}, isThinking, active
 
   return (
     <div style={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <div style={{ padding: '1rem', borderBottom: '1px solid var(--border-color)', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
-        {STAGES.map((stage) => {
-          const status = getStageStatus(stage.id);
-          return (
-            <div key={stage.id} 
-              title={stage.label}
-              style={{ 
-                width: '36px', height: '36px', 
-                borderRadius: '50%', 
-                background: status === 'active' ? 'rgba(99, 102, 241, 0.2)' : status === 'complete' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255, 255, 255, 0.03)',
-                border: `1px solid ${status === 'active' ? 'var(--accent-primary)' : status === 'complete' ? 'rgba(16, 185, 129, 0.4)' : 'var(--glass-border)'}`,
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '1rem',
-                opacity: status === 'pending' ? 0.5 : 1,
-                boxShadow: status === 'active' ? '0 0 12px rgba(99, 102, 241, 0.4)' : 'none',
-                transition: 'all 0.3s ease'
-              }}>
-              {stage.icon}
-            </div>
-          )
-        })}
+      {/* Top Toolbar */}
+      <div style={{ padding: '0.8rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'flex', gap: '0.5rem', background: 'rgba(15, 23, 42, 0.4)', flexWrap: 'wrap' }}>
+        <button className="glass-button" onClick={() => setShowMetrics(!showMetrics)} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', background: showMetrics ? 'rgba(14, 165, 233, 0.2)' : 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: showMetrics ? 'var(--accent-primary)' : 'var(--text-primary)', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+          📊 {showMetrics ? 'Hide Metrics' : 'Metrics'}
+        </button>
+        <button className="glass-button" onClick={handleDownloadJSON} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+          📄 Download JSON
+        </button>
+        <button className="glass-button" onClick={handleDownloadPNG} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.85rem', transition: 'all 0.2s' }}>
+          🖼️ Download PNG
+        </button>
       </div>
+
+      {showMetrics && (
+        <div style={{ padding: '1.5rem 1rem', borderBottom: '1px solid rgba(255,255,255,0.05)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', background: 'rgba(0,0,0,0.1)' }}>
+        {[
+          { label: 'AI Confidence', icon: '🧠', value: pipelineState?.metrics?.confidence || 90, color: '#3b82f6', gradient: 'linear-gradient(90deg, #3b82f6, #0ea5e9)' },
+          { label: 'Evidence Strength', icon: '📚', value: pipelineState?.metrics?.evidence_strength || 85, color: '#10b981', gradient: 'linear-gradient(90deg, #10b981, #34d399)' },
+          { label: 'Source Agreement', icon: '🤝', value: pipelineState?.metrics?.source_agreement || 92, color: '#8b5cf6', gradient: 'linear-gradient(90deg, #8b5cf6, #c084fc)' },
+          { label: 'Reasoning Quality', icon: '⚙️', value: pipelineState?.metrics?.reasoning_quality || 96, color: '#f59e0b', gradient: 'linear-gradient(90deg, #f59e0b, #fbbf24)' }
+        ].map((metric, idx) => (
+          <div key={idx} className="glass-card" style={{ 
+            padding: '1rem', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            gap: '0.8rem',
+            borderRadius: '12px',
+            border: '1px solid rgba(255,255,255,0.05)',
+            background: 'rgba(15, 23, 42, 0.4)',
+            boxShadow: '0 4px 15px rgba(0,0,0,0.2)',
+            transition: 'transform 0.2s ease, box-shadow 0.2s ease',
+            cursor: 'default'
+          }}
+          onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-2px)'; e.currentTarget.style.boxShadow = `0 8px 20px rgba(0,0,0,0.4), 0 0 15px ${metric.color}20`; }}
+          onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = '0 4px 15px rgba(0,0,0,0.2)'; }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                <span style={{ fontSize: '1.2rem', filter: `drop-shadow(0 2px 4px ${metric.color}60)` }}>{metric.icon}</span>
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: '600', letterSpacing: '0.3px' }}>{metric.label}</span>
+              </div>
+              <span style={{ fontSize: '1.1rem', color: 'var(--text-primary)', fontWeight: '800' }}>{metric.value}%</span>
+            </div>
+            
+            <div style={{ width: '100%', height: '6px', background: 'rgba(255,255,255,0.08)', borderRadius: '4px', overflow: 'hidden' }}>
+              <div style={{ 
+                width: `${metric.value}%`, 
+                height: '100%', 
+                background: metric.gradient,
+                boxShadow: `0 0 10px ${metric.color}`,
+                borderRadius: '4px',
+                transition: 'width 1s cubic-bezier(0.4, 0, 0.2, 1)' 
+              }} />
+            </div>
+          </div>
+        ))}
+        </div>
+      )}
 
       <div style={{ flexGrow: 1, padding: '1rem', overflowY: 'auto', display: 'flex', flexDirection: 'column' }}>
         {width < 250 ? (

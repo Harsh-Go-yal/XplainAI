@@ -133,7 +133,7 @@ export function transformStateToFlow(state, activeStage) {
         });
       });
       
-      yOffset += 180;
+      yOffset += 280; // Increased from 180 to provide more gap between candidates and final answer
     }
   }
 

@@ -205,7 +205,7 @@ export default function AppShell() {
             ▶
           </button>
           {historicalPipelineState && (
-            <div style={{ position: 'absolute', top: '10px', left: '50%', transform: 'translateX(-50%)', background: 'var(--color-accent-primary)', color: 'white', padding: '4px 12px', borderRadius: '12px', fontSize: '0.8rem', zIndex: 20, boxShadow: '0 4px 12px rgba(0,0,0,0.3)', pointerEvents: 'none' }}>
+            <div style={{ position: 'absolute', top: '70px', left: '50%', transform: 'translateX(-50%)', background: 'var(--accent-primary)', color: 'white', padding: '6px 16px', borderRadius: '20px', fontSize: '0.85rem', fontWeight: '600', zIndex: 20, boxShadow: '0 4px 15px rgba(14, 165, 233, 0.4)', pointerEvents: 'none', letterSpacing: '0.5px' }}>
               Viewing Historical Tree
             </div>
           )}
