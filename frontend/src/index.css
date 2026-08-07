@@ -1,0 +1,187 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+:root {
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --bg-primary: #000000;
+  --bg-panel: rgba(15, 23, 42, 0.4);
+  --border-color: rgba(255, 255, 255, 0.08);
+  
+  --accent-primary: #0ea5e9;
+  --accent-secondary: #3b82f6;
+  --accent-gradient: linear-gradient(135deg, #0ea5e9, #8b5cf6, #ec4899);
+  
+  --glass-bg: rgba(10, 15, 30, 0.45);
+  --glass-border: rgba(255, 255, 255, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.05);
+  
+  --sans: -apple-system, BlinkMacSystemFont, 'Inter', system-ui, sans-serif;
+}
+
+body {
+  margin: 0;
+  font-family: var(--sans);
+  background: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(14, 165, 233, 0.15), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(139, 92, 246, 0.15), transparent 25%),
+    radial-gradient(circle at 50% 100%, rgba(236, 72, 153, 0.1), transparent 30%);
+  background-attachment: fixed;
+  color: var(--text-primary);
+  color-scheme: dark;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Glass Components */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border-left: 1px solid var(--glass-border);
+  box-shadow: inset 1px 0 0 var(--glass-highlight);
+}
+
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 var(--glass-highlight);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.glass-card:hover {
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  transform: translateY(-2px);
+}
+
+.glass-input {
+  background: rgba(10, 15, 30, 0.6) !important;
+  border: 1px solid var(--glass-border) !important;
+  color: white !important;
+  border-radius: 32px !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3), inset 0 2px 4px rgba(0,0,0,0.5) !important;
+  backdrop-filter: blur(20px);
+}
+.glass-input:focus {
+  outline: none !important;
+  border-color: var(--accent-primary) !important;
+  box-shadow: 0 0 0 1px var(--accent-primary), 0 0 20px rgba(14, 165, 233, 0.3), inset 0 2px 4px rgba(0,0,0,0.5) !important;
+}
+
+.glass-button {
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  color: white !important;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.3), inset 0 1px 0 rgba(255,255,255,0.3) !important;
+}
+.glass-button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 12px 28px rgba(139, 92, 246, 0.5), inset 0 1px 0 rgba(255,255,255,0.4) !important;
+  filter: brightness(1.1);
+}
+
+/* User Message specific overrides */
+.user-message {
+  background: var(--accent-gradient) !important;
+  border: none !important;
+  box-shadow: 0 12px 32px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255,255,255,0.2) !important;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+/* Animations */
+@keyframes pulse-ring {
+  0% { transform: scale(0.8); opacity: 0.5; }
+  50% { transform: scale(1); opacity: 1; }
+  100% { transform: scale(0.8); opacity: 0.5; }
+}
+
+.animate-spin-slow {
+  animation: spin 2s linear infinite, pulse-ring 2s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message-enter {
+  animation: fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Markdown Styles */
+.markdown-body {
+  color: var(--text-primary);
+  font-family: var(--sans);
+  line-height: 1.6;
+}
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 1rem;
+}
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+.markdown-body a {
+  color: #818cf8;
+  text-decoration: none;
+}
+.markdown-body a:hover {
+  text-decoration: underline;
+}
+.markdown-body code {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+  font-family: ui-monospace, monospace;
+  font-size: 0.9em;
+}
+.markdown-body pre {
+  background: rgba(0, 0, 0, 0.3);
+  padding: 1rem;
+  border-radius: 8px;
+  overflow-x: auto;
+  border: 1px solid var(--glass-border);
+}
+.markdown-body pre code {
+  background: none;
+  padding: 0;
+}
+
+/* Resizer Hover Effects */
+.resizer {
+  transition: background 0.2s ease;
+}
+.resizer:hover {
+  background: rgba(148, 163, 184, 0.2) !important;
+}
