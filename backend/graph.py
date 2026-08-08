@@ -412,7 +412,6 @@ _vector_store_cache: Dict[str, Any] = {}
 def process_media_file(file_path: str) -> List[Document]:
     import openai
     import tempfile
-    import subprocess
     
     client = openai.OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
     
@@ -422,9 +421,14 @@ def process_media_file(file_path: str) -> List[Document]:
     # If it's a video, extract audio first
     if ext in ['mp4', 'mov', 'avi', 'mkv']:
         audio_path = file_path + ".mp3"
-        subprocess.run([
-            "ffmpeg", "-i", file_path, "-q:a", "0", "-map", "a", audio_path, "-y"
-        ], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        from moviepy import VideoFileClip
+        try:
+            video = VideoFileClip(file_path)
+            video.audio.write_audiofile(audio_path, logger=None)
+            video.close()
+        except Exception as e:
+            print(f"MoviePy failed to extract audio: {e}")
+            raise e
         
     with open(audio_path, "rb") as audio_file:
         transcript = client.audio.transcriptions.create(

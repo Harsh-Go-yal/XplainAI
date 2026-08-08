@@ -105,21 +105,8 @@ export default function XAIPanel({ width, pipelineState = {}, isThinking, active
     dlAnchorElem.click();
   };
 
-  const handleDownloadPNG = async () => {
-    const flowEl = document.querySelector(".react-flow");
-    if (flowEl) {
-      try {
-        const dataUrl = await toPng(flowEl, { backgroundColor: '#0f172a' });
-        const link = document.createElement('a');
-        link.download = 'reasoning_tree.png';
-        link.href = dataUrl;
-        link.click();
-      } catch (err) {
-        console.error("Failed to download image", err);
-      }
-    } else {
-      alert("No tree to download yet!");
-    }
+  const handleDownloadPDF = () => {
+    document.dispatchEvent(new CustomEvent('download-reasoning-tree'));
   };
 
   const getStageStatus = (stageId) => {
@@ -141,9 +128,6 @@ export default function XAIPanel({ width, pipelineState = {}, isThinking, active
         </button>
         <button className="glass-button" onClick={handleDownloadJSON} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.85rem', transition: 'all 0.2s' }}>
           📄 Download JSON
-        </button>
-        <button className="glass-button" onClick={handleDownloadPNG} style={{ padding: '0.4rem 0.8rem', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '6px', color: 'var(--text-primary)', fontSize: '0.85rem', transition: 'all 0.2s' }}>
-          🖼️ Download PNG
         </button>
       </div>
 
